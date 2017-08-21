@@ -1,0 +1,17 @@
+version: "{build}"
+
+shallow_clone: true
+
+environment:
+  matrix:
+    - {SYSTEM: mingw, ARCH: x86_64, COMPILER: 4.03}
+    - {SYSTEM: cygwin, ARCH: x86, COMPILER: 4.04}
+
+install:
+  - 'IF "%ARCH%"=="x86" (SET CYGSH=C:\Cygwin\bin\bash -lc) ELSE (SET CYGSH=C:\Cygwin64\bin\bash -lc)'
+
+  - ps: '(new-object net.webclient).DownloadString("https://aantron.github.io/binaries/$env:SYSTEM/$env:ARCH/ocaml/$env:COMPILER/install.ps1") | PowerShell -Command -'
+  - ps: '(new-object net.webclient).DownloadString("https://aantron.github.io/binaries/$env:SYSTEM/$env:ARCH/opam/1.2/install.ps1") | PowerShell -Command -'
+
+build_script:
+  - '%CYGSH% "cd /cygdrive/c/projects/bisect-ppx ; src/appveyor_ci_test.sh"'
